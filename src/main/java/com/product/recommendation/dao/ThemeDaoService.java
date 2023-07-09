@@ -1,12 +1,10 @@
 package com.product.recommendation.dao;
 
+import com.product.recommendation.model.Theme;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.product.recommendation.model.Theme;
 
 @Service
 public class ThemeDaoService {
@@ -21,7 +19,7 @@ public class ThemeDaoService {
     // The ID primary key indexed by default
     public List<Theme> fetchThemeByIds(List<Integer> ids) {
         List<Theme> matchedThemes = new ArrayList<>();
-        for (Theme theme: themes) {
+        for (Theme theme : themes) {
             if (ids.indexOf(theme.getId()) > -1) {
                 matchedThemes.add(theme);
             }
@@ -36,7 +34,7 @@ public class ThemeDaoService {
     // The ID primary key indexed by default & limit is used to get only required data
     public List<Theme> collectRandomThemes(List<Integer> ids, Integer size) {
         List<Theme> randomThemes = new ArrayList<>();
-        for (Theme theme: themes) {
+        for (Theme theme : themes) {
             if (ids.indexOf(theme.getId()) < 0) {
                 randomThemes.add(theme);
             }
@@ -44,6 +42,4 @@ public class ThemeDaoService {
         }
         return randomThemes;
     }
-
-
 }

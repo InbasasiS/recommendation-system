@@ -1,20 +1,17 @@
 package com.product.recommendation.service;
 
+import com.product.recommendation.dao.ProductDaoService;
+import com.product.recommendation.dao.ThemeDaoService;
+import com.product.recommendation.model.Product;
+import com.product.recommendation.model.Theme;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.product.recommendation.dao.ProductDaoService;
-import com.product.recommendation.dao.ThemeDaoService;
-import com.product.recommendation.model.Product;
-import com.product.recommendation.model.Theme;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -54,22 +51,28 @@ public class RecommendationService {
 
         HashMap<Integer, Integer> noOfthemeProducts = new HashMap<>(RECOMMENDATION_THEME_LIMIT);
         calculateNoOfProductsPerTheme(noOfthemeProducts, userThemes, totalNoOfUserProducts);
-        totalNoOfRandomProducts += getRemainingUserProductCount(totalNoOfUserProducts, noOfthemeProducts); // Adding the remaining capacity left in user products
+        totalNoOfRandomProducts += getRemainingUserProductCount(
+                totalNoOfUserProducts, noOfthemeProducts); // Adding the remaining capacity left in user products
         calculateNoOfProductsPerTheme(noOfthemeProducts, randomThemes, totalNoOfRandomProducts);
 
         log.info("Number of products per theme, {}", noOfthemeProducts);
+        return retrieveProducts(noOfthemeProducts);
+    }
 
+    private List<Product> retrieveProducts(HashMap<Integer, Integer> noOfthemeProducts) {
         // Fetch the products for each theme by weightage & limit by count
         // This can be computed concurrently to reduce the overall time
+
         List<Product> productRecommendations = new ArrayList<>();
         for (Map.Entry<Integer, Integer> themeProductCount : noOfthemeProducts.entrySet()) {
-            productRecommendations.addAll(productDtoService.fetchProductsByIdsAndCount(themeProductCount.getKey(), themeProductCount.getValue()));
+            productRecommendations.addAll(productDtoService.fetchProductsByIdsAndCount(
+                    themeProductCount.getKey(), themeProductCount.getValue()));
         }
         return productRecommendations;
     }
 
-    private Integer getRemainingUserProductCount(Integer totalNoOfUserProducts,
-            HashMap<Integer, Integer> noOfthemeProducts) {
+    private Integer getRemainingUserProductCount(
+            Integer totalNoOfUserProducts, HashMap<Integer, Integer> noOfthemeProducts) {
 
         Integer utilisedUserProductCount = 0;
         for (Map.Entry<Integer, Integer> themeProductCount : noOfthemeProducts.entrySet()) {
@@ -78,15 +81,16 @@ public class RecommendationService {
         return totalNoOfUserProducts - utilisedUserProductCount;
     }
 
-    private void calculateNoOfProductsPerTheme(HashMap<Integer, Integer> noOfthemeProducts, List<Theme> themes, Integer totalNoOfThemeProducts) {
+    private void calculateNoOfProductsPerTheme(
+            HashMap<Integer, Integer> noOfthemeProducts, List<Theme> themes, Integer totalNoOfThemeProducts) {
         Integer noOfProductsPerTheme = totalNoOfThemeProducts / themes.size();
 
-        while(true) {
+        while (true) {
             if (noOfProductsPerTheme == 0 || totalNoOfThemeProducts <= 0 || themes.isEmpty()) {
                 break;
             }
 
-            for(int i=0; i < themes.size(); i++) {
+            for (int i = 0; i < themes.size(); i++) {
                 Theme theme = themes.get(i);
                 if (theme.getTotalProducts() < noOfProductsPerTheme) {
                     noOfthemeProducts.put(theme.getId(), theme.getTotalProducts());
@@ -95,8 +99,9 @@ public class RecommendationService {
                     // Remove if the theme is exhausted
                     themes.remove(i);
                 } else {
-                    Integer cumulativeProductCount = (noOfthemeProducts.get(theme.getId()) == null) ?
-                        noOfProductsPerTheme : (noOfthemeProducts.get(theme.getId()) + noOfProductsPerTheme);
+                    Integer cumulativeProductCount = (noOfthemeProducts.get(theme.getId()) == null)
+                            ? noOfProductsPerTheme
+                            : (noOfthemeProducts.get(theme.getId()) + noOfProductsPerTheme);
                     noOfthemeProducts.put(theme.getId(), cumulativeProductCount);
                     totalNoOfThemeProducts -= noOfProductsPerTheme;
                 }
@@ -105,7 +110,8 @@ public class RecommendationService {
             if (totalNoOfThemeProducts == 1 && themes.size() > 0) {
                 // Incase of one products left, Add it to the first theme
                 Theme firstTheme = themes.get(0);
-                noOfthemeProducts.put(firstTheme.getId(), noOfthemeProducts.get(firstTheme.getId()) + noOfProductsPerTheme);
+                noOfthemeProducts.put(
+                        firstTheme.getId(), noOfthemeProducts.get(firstTheme.getId()) + noOfProductsPerTheme);
                 noOfProductsPerTheme = 0;
 
             } else if (themes.size() > 0) {
@@ -114,7 +120,8 @@ public class RecommendationService {
         }
     }
 
-    private List<Integer> getUserAndRandomProductCount(Integer noOfProducts, List<Theme> userThemes, List<Theme> randomThemes) {
+    private List<Integer> getUserAndRandomProductCount(
+            Integer noOfProducts, List<Theme> userThemes, List<Theme> randomThemes) {
         Integer noOfUserProducts = 0;
         Integer noOfRandomProducts = 0;
 
@@ -123,9 +130,12 @@ public class RecommendationService {
         } else if (userThemes.isEmpty()) {
             noOfRandomProducts = noOfProducts;
         } else {
-            Double totalWeightage = (double) USER_THEME_WEIGTAGE * userThemes.size() + RANDOM_THEME_WEIGTAGE * randomThemes.size();
-            noOfUserProducts = (int) Math.round(((double) ((USER_THEME_WEIGTAGE * userThemes.size()) / totalWeightage)) * noOfProducts);
-            noOfRandomProducts = (int) Math.round(((double) ((RANDOM_THEME_WEIGTAGE * randomThemes.size()) / totalWeightage)) * noOfProducts);
+            Double totalWeightage =
+                    (double) USER_THEME_WEIGTAGE * userThemes.size() + RANDOM_THEME_WEIGTAGE * randomThemes.size();
+            noOfUserProducts = (int)
+                    Math.round(((double) ((USER_THEME_WEIGTAGE * userThemes.size()) / totalWeightage)) * noOfProducts);
+            noOfRandomProducts = (int) Math.round(
+                    ((double) ((RANDOM_THEME_WEIGTAGE * randomThemes.size()) / totalWeightage)) * noOfProducts);
         }
         return Arrays.asList(noOfUserProducts, noOfRandomProducts);
     }
@@ -151,6 +161,4 @@ public class RecommendationService {
     private boolean isThemesEmpty(List<Theme> randomThemes, List<Theme> userThemes) {
         return userThemes.isEmpty() && randomThemes.isEmpty();
     }
-
-
 }

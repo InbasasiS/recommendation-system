@@ -1,12 +1,10 @@
 package com.product.recommendation.dao;
 
+import com.product.recommendation.model.Product;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.product.recommendation.model.Product;
 
 @Service
 public class ProductDaoService {
@@ -22,7 +20,7 @@ public class ProductDaoService {
     public List<Product> fetchProductsByIdsAndCount(Integer themeId, Integer count) {
         List<Product> productsRemmended = new ArrayList<>();
 
-        for (Product product: products) {
+        for (Product product : products) {
             if (product.getTheme().getId().equals(themeId)) {
                 productsRemmended.add(product);
             }
@@ -33,5 +31,4 @@ public class ProductDaoService {
         }
         return productsRemmended;
     }
-
 }

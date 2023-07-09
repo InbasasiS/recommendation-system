@@ -1,20 +1,20 @@
 # Product Recommendation System
 
-### LLD
+### Database Design
 
-![Alt text](https://github.com/InbasasiS/recommendation-system/blob/RecommendationSystemDBDesign.jpg?raw=true "Title")
+![Alt text](https://github.com/InbasasiS/recommendation-system/blob/main/blob/database-design/RecommendationSystemDBDes.jpg?raw=true "Title")
 
 ## Requirements
 
 - Build a recommendation system for retail products based on user themes
-- When user does not configured themes, Consider recommending using random themes
+- When a user does not configure themes, Consider recommending using random themes
 - example themes, #SummerDelight, #teen, .. 100s of themes
 - A user can follow one or more themes
 - The product will be associated with a theme
 - There can be a maximum of 3 themes & 20 products considered for recommendation
-- Everyday, The weightage is calculated for a set of products based on price & recency
-- The user themes takes a higher weigtage (2) while the random themes will be lesser weightage(1)
-- The products has to be sorted based on the weigtage (sorting will be available while using the DB query, Not implemented in as this is a sample data)
+- Every day, The weightage is calculated for a set of products based on price & recency
+- The user themes take a higher weightage (2) while the random themes will be a lesser weightage(1)
+- The products have to be sorted based on the weightage (sorting will be available while using the DB query, Not implemented as this is sample data)
 
 ## Quick Start Guide
 
@@ -25,22 +25,22 @@
 
 ### API Details
 
-### Recommend Products
+#### Recommend Products
 
-#### Scenerio 1:
+#### Scenario 1:
 
 - User Themes - Theme A, Theme B
 - Random Themes - Theme D
-- All the themes contains enought products to be presented
+- All the themes contain enough products to be presented
 - The recommendation will be,
 - Theme A - 8 products
 - Theme B - 8 products
 - Theme D - 4 products
 
-
 POST - http://localhost:8080/api/v1/products?user=100&count=20
 
-Body:
+<details>
+  <summary>Body:</summary>
 
 ```json
 {
@@ -48,9 +48,13 @@ Body:
         1001,
         2001
     ]
-}```
+}
+```
 
-Response:
+</details>
+
+<details>
+  <summary>Response:</summary>
 
 ```json
 [
@@ -274,14 +278,17 @@ Response:
         },
         "weigtage": 0.5
     }
-]```
+]
+```
 
-#### Scenerio 2:
+</details>
+
+#### Scenario 2:
 
 - User Themes - Theme A, Theme B
 - Random Themes - Theme D
-- The totalproducts in the themes.csv is adjusted to 5 for Theme B
-- Now, The User Theme B has only 5 data
+- The total products in the themes.csv is adjusted to 5 for Theme B
+- Now, User Theme B has only 5 data
 - The recommendation will be,
 - Theme A - 11 products
 - Theme B - 5 products
@@ -289,7 +296,8 @@ Response:
 
 POST - http://localhost:8080/api/v1/products?user=100&count=20
 
-Body:
+<details>
+  <summary>Body:</summary>
 
 ```json
 {
@@ -297,9 +305,13 @@ Body:
         1001,
         2001
     ]
-}```
+}
+```
 
-Response:
+</details>
+
+<details>
+  <summary>Response:</summary>
 
 ```json
 [
@@ -526,12 +538,14 @@ Response:
 ]
 ```
 
-#### Scenerio 3:
+</details>
+
+#### Scenario 3:
 
 - User Themes - Theme A, Theme B
 - Random Themes - Theme D
-- The totalproducts in the themes.csv is adjusted to 5 for Theme A
-- The totalproducts in the themes.csv is adjusted to 5 for Theme B
+- The total products in the themes.csv is adjusted to 5 for Theme A
+- The total products in the themes.csv is adjusted to 5 for Theme B
 - Now, The User Theme A & Theme B has only 5 products
 - The recommendation will be,
 - Theme A - 5 products
@@ -540,7 +554,8 @@ Response:
 
 POST - http://localhost:8080/api/v1/products?user=100&count=20
 
-Body:
+<details>
+  <summary>Body:</summary>
 
 ```json
 {
@@ -548,9 +563,13 @@ Body:
         1001,
         2001
     ]
-}```
+}
+```
 
-Response:
+</details>
+
+<details>
+  <summary>Response:</summary>
 
 ```json
 [
@@ -776,3 +795,6 @@ Response:
     }
 ]
 ```
+
+</details>
+

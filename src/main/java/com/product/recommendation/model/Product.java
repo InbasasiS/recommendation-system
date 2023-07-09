@@ -1,6 +1,5 @@
 package com.product.recommendation.model;
 
-
 import lombok.Builder;
 import lombok.Data;
 
